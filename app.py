@@ -1,14 +1,16 @@
+# app.py
 from flask import Flask, render_template, request
 import requests
 from collections import Counter
 import datetime
+import os
 
 app = Flask(__name__)
 
 API_URL = "https://kiwi-com-cheap-flights.p.rapidapi.com/one-way"
 
 HEADERS = {
-    "x-rapidapi-key": "e9cbad7ce4msh0e726e3ee4f94e8p175479jsn40a3ce3ba355",
+    "x-rapidapi-key": os.getenv("RAPIDAPI_KEY"), 
     "x-rapidapi-host": "kiwi-com-cheap-flights.p.rapidapi.com"
 }
 
