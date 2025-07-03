@@ -5,6 +5,7 @@ from collections import Counter
 import datetime
 import os
 
+
 app = Flask(__name__)
 
 API_URL = "https://kiwi-com-cheap-flights.p.rapidapi.com/one-way"
