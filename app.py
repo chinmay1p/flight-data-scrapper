@@ -4,8 +4,10 @@ import requests
 from collections import Counter
 import datetime
 import os
+from app import app
+from flask_vercel import vercel
 
-app = Flask(__name__)
+app = vercel(app)
 
 API_URL = "https://kiwi-com-cheap-flights.p.rapidapi.com/one-way"
 
