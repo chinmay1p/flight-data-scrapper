@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Air Demand Trends</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>✈️ Flight Data Viewer</h1>
+
+    <form method="POST">
+        <label>From (IATA): <input type="text" name="from_city" required placeholder="e.g. DEL"></label>
+        <label>To (IATA): <input type="text" name="to_city" required placeholder="e.g. BOM"></label>
+        <button type="submit">Show Flights</button>
+    </form>
+
+    {% if flights %}
+        <h2>Flights Found</h2>
+        <table border="1" cellpadding="5">
+            <tr>
+                <th>Airline</th>
+                <th>Flight No</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Time</th>
+                <th>Price (USD)</th>
+            </tr>
+            {% for f in flights %}
+            <tr>
+                <td>{{ f.airline }}</td>
+                <td>{{ f.flight_num }}</td>
+                <td>{{ f.from }}</td>
+                <td>{{ f.to }}</td>
+                <td>{{ f.time }}</td>
+                <td>{{ f.price }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        {% if request.method == 'POST' %}
+            <p>No flights found for the selected route.</p>
+        {% endif %}
+    {% endif %}
+
+    {% if insights %}
+        <h2>Insights</h2>
+        <h3>Top Routes</h3>
+        <ul>
+            {% for route in insights.top_routes %}
+                <li>{{ route[0][0] }} → {{ route[0][1] }} ({{ route[1] }} flights)</li>
+            {% endfor %}
+        </ul>
+
+        <h3>Average Price</h3>
+        <p>$ {{ insights.avg_price }}</p>
+
+        <h3>Peak Demand Hours</h3>
+        <ul>
+            {% for hour in insights.peak_hours %}
+                <li>{{ hour[0] }}:00 – {{ hour[1] }} flights</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if price_trend and price_trend|length > 0 %}
+        <h2>Price Trend</h2>
+        <canvas id="price_chart" width="800" height="300"></canvas>
+    {% endif %}
+
+<script>
+    const canvas = document.getElementById('price_chart');
+    if (canvas) {
+        const rawData = {{ price_trend | tojson }};
+        const labels = rawData.map(p => new Date(p.time).toLocaleString());
+        const prices = rawData.map(p => p.price);
+
+        const ctx = canvas.getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Flight Price',
+                    data: prices,
+                    fill: false,
+                    borderColor: 'blue',
+                    tension: 0.2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Time' },
+                        ticks: { maxTicksLimit: 10, autoSkip: true }
+                    },
+                    y: {
+                        title: { display: true, text: 'Price (USD)' }
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
