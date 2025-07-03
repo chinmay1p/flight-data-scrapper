@@ -98,5 +98,3 @@ def home():
 
     return render_template('index.html', flights=flights, insights=insights, price_trend=price_trend)
 
-if __name__ == '__main__':
-    app.run(debug=True)
