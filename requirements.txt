@@ -1,3 +1,2 @@
 flask
 requests
-git+https://github.com/juancabrera/flask-vercel.git
